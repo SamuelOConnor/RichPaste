@@ -30,6 +30,8 @@ Most of the guide is still relevant to OneNote 2016 but there are some notable c
 
 6) To build the Setup project along with the Class Libraries you'll need to go into 'Build' >> 'Configuration Manager' and tick 'Build' next to the Setup project
 
+7) This might not be a problem for everyone but in my solution the addin would always fail on load up if I had any "Microsoft.Office.Interop.OneNote.Application" references/objects in my start up Class (the one with your ProgID and GUID). I recommend leaving them out of the startup class and just using them in classes that the startup one uses.
+<br>
 <hr>
 <b><u>How OneNote pages are structured/ stored</u></b>
 
