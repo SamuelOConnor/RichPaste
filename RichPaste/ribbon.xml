@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<customUI xmlns="http://schemas.microsoft.com/office/2006/01/customui" loadImage="GetImage">
+  <ribbon>
+    <tabs>
+      <tab id="tabCustom" label="RichPaste">
+        <group id="groupHello" >
+          <button id="buttonHello" label="Paste" size="large" screentip="Paste Rich Text into current page" onAction="PasteAction" image="RTF.png"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
+
