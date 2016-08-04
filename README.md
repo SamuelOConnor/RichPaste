@@ -1,5 +1,5 @@
 # RichPaste
-OneNote 2016 Addin - Paste Rich Text Into Your Notebook!
+OneNote 2016 Addin - Paste Rich Text Into Your Notebook! <b><h3> To install addin - click on 'RichPasteInstall.msi' above and download</b></h3> 
 
 <i>If you have any further questions or would like to contact me then send me an email at <a href="samueljoeoconnor@hotmail.co.uk">samueljoeoconnor@hotmail.co.uk</a> </i>
 
