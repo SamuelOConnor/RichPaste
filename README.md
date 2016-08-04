@@ -82,3 +82,5 @@ This reference it contains
 
 Special formats add in additional tags (like bullet points adds a "Bullet" tag)... but these are the basics and all you need to understand to start editing your pages.
 
+OneNote contains your Page's text within the CDATA[] tag in HTML. This is why some Paste functions work (like copy/pasteing from MS Word) and why Rich Text doesn't (there is no standard RTF to HTML convertion done)
+
