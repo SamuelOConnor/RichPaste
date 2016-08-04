@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RichPaste
+namespace RichConsole
 {
     //---------------------------------------------------------------------------
     // 
@@ -23,8 +23,8 @@ namespace RichPaste
     using System.IO;
     using System.Xml;
     using System.Windows;
-    using System.Threading;    
-    
+    using System.Threading;
+
     /// <summary>
     /// HtmlToXamlConverter is a static class that takes an HTML string
     /// and converts it into XAML
@@ -60,15 +60,15 @@ namespace RichPaste
             Thread staThread = new Thread(
             delegate ()
             {
-            try
-            {
+                try
+                {
 
                     XmlTextReader xamlReader;
                     StringBuilder htmlStringBuilder;
                     XmlTextWriter htmlWriter;
 
                     xamlReader = new XmlTextReader(new StringReader(xamlString));
-                    
+
 
                     htmlStringBuilder = new StringBuilder(100);
                     htmlWriter = new XmlTextWriter(new StringWriter(htmlStringBuilder));
@@ -83,7 +83,7 @@ namespace RichPaste
 
                     result = htmlString;
 
-                    end:;
+                end:;
                 }
                 catch (Exception ex)
                 {
@@ -125,40 +125,40 @@ namespace RichPaste
             Thread staThread = new Thread(
             delegate ()
             {
-            try
-            {
+                try
+                {
 
-                if (!ReadNextToken(xamlReader))
-                        {
-                            // Xaml content is empty - nothing to convert
-                            result= false;
-                        }
+                    if (!ReadNextToken(xamlReader))
+                    {
+                        // Xaml content is empty - nothing to convert
+                        result = false;
+                    }
 
-                        if (xamlReader.NodeType != XmlNodeType.Element || xamlReader.Name != "FlowDocument")
-                        {
-                            // Root FlowDocument elemet is missing
-                            result = false;
-                        }
+                    if (xamlReader.NodeType != XmlNodeType.Element || xamlReader.Name != "FlowDocument")
+                    {
+                        // Root FlowDocument elemet is missing
+                        result = false;
+                    }
 
-                        // Create a buffer StringBuilder for collecting css properties for inline STYLE attributes
-                        // on every element level (it will be re-initialized on every level).
-                        StringBuilder inlineStyle = new StringBuilder();
+                    // Create a buffer StringBuilder for collecting css properties for inline STYLE attributes
+                    // on every element level (it will be re-initialized on every level).
+                    StringBuilder inlineStyle = new StringBuilder();
 
-                        if (asFullDocument)
-                        {
-                            htmlWriter.WriteStartElement("HTML");
-                            htmlWriter.WriteStartElement("BODY");
-                        }
-                        WriteFormattingProperties(xamlReader, htmlWriter, inlineStyle);
+                    if (asFullDocument)
+                    {
+                        htmlWriter.WriteStartElement("HTML");
+                        htmlWriter.WriteStartElement("BODY");
+                    }
+                    WriteFormattingProperties(xamlReader, htmlWriter, inlineStyle);
 
-                        WriteElementContent(xamlReader, htmlWriter, inlineStyle);
+                    WriteElementContent(xamlReader, htmlWriter, inlineStyle);
 
-                        if (asFullDocument)
-                        {
-                            htmlWriter.WriteEndElement();
-                            htmlWriter.WriteEndElement();
-                        }
-                        result = true;
+                    if (asFullDocument)
+                    {
+                        htmlWriter.WriteEndElement();
+                        htmlWriter.WriteEndElement();
+                    }
+                    result = true;
                 }
                 catch (Exception ex)
                 {
@@ -192,13 +192,13 @@ namespace RichPaste
         [STAThread]
         private static void WriteFormattingProperties(XmlTextReader xamlReader, XmlTextWriter htmlWriter, StringBuilder inlineStyle)
         {
-            
+
             Exception threadEx = null;
             Thread staThread = new Thread(
             delegate ()
             {
-            try
-            {
+                try
+                {
 
                     Debug.Assert(xamlReader.NodeType == XmlNodeType.Element);
 
@@ -341,7 +341,7 @@ namespace RichPaste
             staThread.SetApartmentState(ApartmentState.STA);
             staThread.Start();
             staThread.Join();
-            
+
         }
 
         [STAThread]
@@ -415,9 +415,9 @@ namespace RichPaste
             Thread staThread = new Thread(
             delegate ()
             {
-            try
-            {
-                Debug.Assert(xamlReader.NodeType == XmlNodeType.Element);
+                try
+                {
+                    Debug.Assert(xamlReader.NodeType == XmlNodeType.Element);
 
                     bool elementContentStarted = false;
 
@@ -514,17 +514,17 @@ namespace RichPaste
             Thread staThread = new Thread(
             delegate ()
             {
-            try
-            {
-                Debug.Assert(xamlReader.NodeType == XmlNodeType.Element);
-
-                if (inlineStyle != null && xamlReader.Name.EndsWith(".TextDecorations"))
+                try
                 {
-                    inlineStyle.Append("text-decoration:underline;");
-                }
+                    Debug.Assert(xamlReader.NodeType == XmlNodeType.Element);
 
-                // Skip the element representing the complex property
-                WriteElementContent(xamlReader, /*htmlWriter:*/null, /*inlineStyle:*/null);
+                    if (inlineStyle != null && xamlReader.Name.EndsWith(".TextDecorations"))
+                    {
+                        inlineStyle.Append("text-decoration:underline;");
+                    }
+
+                    // Skip the element representing the complex property
+                    WriteElementContent(xamlReader, /*htmlWriter:*/null, /*inlineStyle:*/null);
 
 
                 }
@@ -710,12 +710,12 @@ namespace RichPaste
 
                             case XmlNodeType.EndEntity:
                             case XmlNodeType.EntityReference:
-                                    //  Implement entity reading
-                                    //xamlReader.ResolveEntity();
-                                    //xamlReader.Read();
-                                    //ReadChildNodes( parent, parentBaseUri, xamlReader, positionInfo);
-                                    break; // for now we ignore entities as insignificant stuff
-                            
+                                //  Implement entity reading
+                                //xamlReader.ResolveEntity();
+                                //xamlReader.Read();
+                                //ReadChildNodes( parent, parentBaseUri, xamlReader, positionInfo);
+                                break; // for now we ignore entities as insignificant stuff
+
                             case XmlNodeType.Comment:
                                 result = true;
                                 break;
@@ -728,7 +728,7 @@ namespace RichPaste
                         }
                     }
                     result = false;
-                    
+
                 }
                 catch (Exception ex)
                 {

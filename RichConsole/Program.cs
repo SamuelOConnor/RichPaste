@@ -8,7 +8,7 @@ using System.Threading;
 using Microsoft.Office.Interop.OneNote;
 using Application = Microsoft.Office.Interop.OneNote.Application;
 
-namespace RichPaste
+namespace RichConsole
 {
     [Serializable()]
     public class Program
@@ -16,18 +16,11 @@ namespace RichPaste
         [STAThread]
         private static string ConvertRtfToXaml(string rtfText)
         {
-            string result = null;
+            var richTextBox = new System.Windows.Controls.RichTextBox();
 
-            Exception threadEx = null;
-            Thread staThread = new Thread(
-            delegate ()
-            {
-                try
-                {
-                    var richTextBox = new System.Windows.Controls.RichTextBox();
-
-                    if (string.IsNullOrEmpty(rtfText)) result = ""; goto end;
-                    #pragma warning disable
+                    if (string.IsNullOrEmpty(rtfText))
+                    return ""; 
+                   
 
                     TextRange textRange = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
 
@@ -55,88 +48,58 @@ namespace RichPaste
                         rtfMemoryStream.Seek(0, SeekOrigin.Begin);
                         using (var rtfStreamReader = new StreamReader(rtfMemoryStream))
                         {
-                            result = rtfStreamReader.ReadToEnd();
+                            return rtfStreamReader.ReadToEnd();
                         }
 
                     }
-
-                    #pragma warning restore
-                    end:;
-                }
-                catch (Exception ex)
-                {
-                    threadEx = ex;
-                }
-            });
-            staThread.SetApartmentState(ApartmentState.STA);
-            staThread.Start();
-            staThread.Join();
-
-
-            return result;
+                    
         }
 
 
-        
+
 
         [STAThread]
         public static string ConvertRtfToHtml(string rtfText)
         {
-            string result = null;
+            const string FlowDocumentFormat = "<FlowDocument>{0}</FlowDocument>";
+            var xamlText = string.Format(FlowDocumentFormat, ConvertRtfToXaml(rtfText));
 
-            Exception threadEx = null;
-            Thread staThread = new Thread(
-            delegate ()
-            {
-                try
-                {
-                    const string FlowDocumentFormat = "<FlowDocument>{0}</FlowDocument>";
-                    var xamlText = string.Format(FlowDocumentFormat, ConvertRtfToXaml(rtfText));
-
-                    result = HtmlFromXamlConverter.ConvertXamlToHtml(xamlText, false);
-                }
-                catch (Exception ex)
-                {
-                    threadEx = ex;
-                }
-            });
-            staThread.SetApartmentState(ApartmentState.STA);
-            staThread.Start();
-            staThread.Join();
-
-
-            return result;
+            return HtmlFromXamlConverter.ConvertXamlToHtml(xamlText, false);
+               
         }
-        
+
         public void OnHierarchyChange(string bstrActivePageID)
         {
-            throw new NotImplementedException();
         }
-        
+
         public void OnNavigate()
         {
         }
 
-        //This [STAThread] is essential to access the clipboard
-        [STAThread] 
+ /*   < This [STAThread] is essential to access the clipboard    >            
+  *     (If you are only using Class Libaries then this isn't enough and you   
+  *      have to specifically open a new STAThread and have the Clipboard.Get          
+  *      methods in there.)                                                          */
+        [STAThread]
         public static void Main()
         {
-            
-            // Create New Instance of OneNote Application
+            MessageBox.Show("Main() Called");
+
+            //Create New Instance of OneNote Application
             var oneNote = new Application();
-            
+
 
             //Get current active page (see commented for current NoteBook/Section)
 
             /* string thisNoteBook = oneNote.Windows.CurrentWindow.CurrentNotebookId;
                string thisSection  = oneNote.Windows.CurrentWindow.CurrentSectionId;    */
             string thisPage = oneNote.Windows.CurrentWindow.CurrentPageId;
-            
+
 
             //Get the content of the page
             string xmlPage;
             oneNote.GetPageContent(thisPage, out xmlPage);
-            
+
 
             //Declarations for paste
             string returnStringText = null;
@@ -147,13 +110,15 @@ namespace RichPaste
             string ns = @"one:";
 
 
-            //Find the end of the page and insert a new section for our content
+            //Find the start and end of the page so that we can insert 
+            //a new section in between for our pasted content
             int start = xmlPage.LastIndexOf("</one:Page>");
             string startstr = xmlPage.Substring(0, start);
             string endstr = xmlPage.Substring(start, xmlPage.Length - start);
 
 
-            //New section for our content (this is essential when the page is currently blank)
+            //New section for our content 
+            //(this is essential when the page in OneNote is currently empty)
             string outline =
              "<" + ns + "Outline >" +
              "<" + ns + "Position x=\"35.0\" y=\"60.0\"/>" + //This puts it just under title
@@ -170,34 +135,44 @@ namespace RichPaste
             string newpage = startstr + outline + endstr;
             xmlPage = newpage;
 
-            //Get Text in Clipboard (needs a new STAThread)
+
+/*         (Below I've specifically opened a new STAThread to show you the code, 
+ *          if you are using a console project then you only need [STAThread])                                                                    */
+
+            //Get Text in Clipboard using full STAThread
+
+            //Declarations to get out of the thread
             string PastedText = null;
             bool containsRTF = false;
             bool containsHTML = false;
             bool containsTEXT = false;
             Exception threadEx = null;
+
+            //Open new Thread
             Thread staThread = new Thread(
                 delegate ()
                 {
                     try
                     {
-                       containsRTF  = Clipboard.ContainsText(TextDataFormat.Rtf);
-                       containsHTML = Clipboard.ContainsText(TextDataFormat.Html);
-                       containsTEXT = Clipboard.ContainsText(TextDataFormat.Text);
+                        //Query our clipboard
+                        containsRTF = Clipboard.ContainsText(TextDataFormat.Rtf);
+                        containsHTML = Clipboard.ContainsText(TextDataFormat.Html);
+                        containsTEXT = Clipboard.ContainsText(TextDataFormat.Text);
 
-                        if(containsRTF == true && containsHTML == false)
+                        //Get relevant data
+                        if (containsRTF == true && containsHTML == false)
                         {
                             PastedText = Clipboard.GetText(TextDataFormat.Rtf);
                         }
-                        else if(containsHTML == true)
+                        else if (containsHTML == true)
                         {
                             PastedText = Clipboard.GetText(TextDataFormat.Html);
                         }
-                        else if(containsTEXT == true)
+                        else if (containsTEXT == true)
                         {
-                            PastedText   = Clipboard.GetText(TextDataFormat.Text);
+                            PastedText = Clipboard.GetText(TextDataFormat.Text);
                         }
-                       
+
                     }
 
                     catch (Exception ex)
@@ -209,7 +184,7 @@ namespace RichPaste
             staThread.Start();
             staThread.Join();
 
-           
+
             //Does the clipboard contain Rich Text? (we put an extra && just to be sure it isn't html as they can sometimes get confused)
             if (containsRTF == true && containsHTML == false)
             {
@@ -299,9 +274,9 @@ namespace RichPaste
             //Remove the orphaned </p> tags
             Pasteresult = Pasteresult.Replace("</P>", "").Replace("</p>", "");
 
-            //Plain text will now re-join here
-            Skip:
-            
+        //Plain text will now re-join here
+        Skip:
+
 
             //Get the position of the end of the last code block
             int PageContent = xmlPage.LastIndexOf("]]></one:T>");
@@ -310,7 +285,7 @@ namespace RichPaste
 
             //Insert out pasted text into the current page
             string NewPage = startofPage + Pasteresult + endofPage;
-            
+
 
             try
             {
@@ -323,6 +298,9 @@ namespace RichPaste
             }
 
 
+            oneNote = null;
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
 
         }
 
