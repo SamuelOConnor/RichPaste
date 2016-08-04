@@ -15,22 +15,24 @@ To start off the addin simply follow this guide: http://www.malteahrens.com/#/bl
 
 Most of the guide is still relevant to OneNote 2016 but there are some notable changes:
 
-1) When you add the assemblies you'll need the following COM assemblies (for Office 2016)
+1) Use .Net version 4.5 instead of the newer 4.5.2 etc (in Project Properties >> Application >> Target Framework). Your compiler will probably warn you to do this anyway.
+
+2) When you add the assemblies you'll need the following COM assemblies (for Office 2016)
 
     1) Microsoft OneNote 15.0 Object Library
     2) Microsoft Office 16.0 Object Library
 
-2) It is mentioned in the guide but you have to turn off the 'Embed Interop Types' from the OneNote Assembly (hit F4 on the reference)
+3) It is mentioned in the guide but you have to turn off the 'Embed Interop Types' from the OneNote Assembly (hit F4 on the reference)
 
-3) Installer Templates aren't in the standard install of Visual Studio 2015, but you can download the templates here: https://visualstudiogallery.msdn.microsoft.com/f1cc3f3e-c300-40a7-8797-c509fb8933b9
+4) Installer Templates aren't in the standard install of Visual Studio 2015, but you can download the templates here: https://visualstudiogallery.msdn.microsoft.com/f1cc3f3e-c300-40a7-8797-c509fb8933b9
 
-4) [On 64bit machine] When adding the registry keys you will also have to add the keys to your WOW6432Node Folders (see RegKeysImport.reg for examples)
+5) [On 64bit machine] When adding the registry keys you will also have to add the keys to your WOW6432Node Folders (see RegKeysImport.reg for examples)
 
-5) [On 64bit machine] You'll also have to change the output type on the Setup project to x64 (hit F4 on the project)
+6) [On 64bit machine] You'll also have to change the output type on the Setup project to x64 (hit F4 on the project)
 
-6) To build the Setup project along with the Class Libraries you'll need to go into 'Build' >> 'Configuration Manager' and tick 'Build' next to the Setup project
+7) To build the Setup project along with the Class Libraries you'll need to go into 'Build' >> 'Configuration Manager' and tick 'Build' next to the Setup project
 
-7) This might not be a problem for everyone but in my solution the addin would always fail on load up if I had any "Microsoft.Office.Interop.OneNote.Application" references/objects in my start up Class (the one with your ProgID and GUID). I recommend leaving them out of the startup class and just using them in classes that the startup one uses.
+8) This might not be a problem for everyone but in my solution the addin would always fail on load up if I had any "Microsoft.Office.Interop.OneNote.Application" references/objects in my start up Class (the one with your ProgID and GUID). I recommend leaving them out of the startup class and just using them in classes that the startup one uses.
 <br>
 <hr>
 <b><u>How OneNote pages are structured/ stored</u></b>
