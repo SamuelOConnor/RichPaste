@@ -2,8 +2,13 @@
 OneNote 2016 Addin - Paste Rich Text Into Your Notebook!
 ________________________________________________________________________
 
-# Method
+<h3><u> Contents </u></h3>
+<ol>
+<li><u>Creating The ribbon button</u></li>
+<li><u>How OneNote pages are structured and how we can edit them</u></li>
+</ol>
 
+<hr>
 <b><u>Creating The ribbon button</u></b>
 
 To start off the addin simply follow this guide: http://www.malteahrens.com/#/blog/howto-onenote-dev/
