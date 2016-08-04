@@ -14,7 +14,8 @@ ________________________________________________________________________
 To start off the addin simply follow this guide: http://www.malteahrens.com/#/blog/howto-onenote-dev/
 
 Most of the guide is still relevant to OneNote 2016 but there are some notable changes:
-
+<br>
+<br>
 1) Use .Net version 4.5 instead of the newer 4.5.2 etc (in Project Properties >> Application >> Target Framework). Your compiler will probably warn you to do this anyway.
 
 2) When you add the assemblies you'll need the following COM assemblies (for Office 2016)
