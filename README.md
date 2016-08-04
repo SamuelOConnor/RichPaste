@@ -1,7 +1,7 @@
 # RichPaste
 OneNote 2016 Addin - Paste Rich Text Into Your Notebook!
 
-If you have any further questions or would like to contact me then send me an email at <a href="samueljoeoconnor@hotmail.co.uk">samueljoeoconnor@hotmail.co.uk</a> 
+<i>If you have any further questions or would like to contact me then send me an email at <a href="samueljoeoconnor@hotmail.co.uk">samueljoeoconnor@hotmail.co.uk</a> </i>
 
 ________________________________________________________________________
 
