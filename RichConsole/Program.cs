@@ -54,19 +54,7 @@ namespace RichConsole
                     }
                     
         }
-
-
-
-
-        [STAThread]
-        public static string ConvertRtfToHtml(string rtfText)
-        {
-            const string FlowDocumentFormat = "<FlowDocument>{0}</FlowDocument>";
-            var xamlText = string.Format(FlowDocumentFormat, ConvertRtfToXaml(rtfText));
-
-            return HtmlFromXamlConverter.ConvertXamlToHtml(xamlText, false);
-               
-        }
+        
 
         public void OnHierarchyChange(string bstrActivePageID)
         {
@@ -189,7 +177,7 @@ namespace RichConsole
             if (containsRTF == true && containsHTML == false)
             {
                 //Get HTML from Rich Text
-                Pasteresult = ConvertRtfToHtml(PastedText);
+                Pasteresult = ConvertXAMLtoHTML.convert(ConvertRtfToXaml(PastedText));
             }
 
             //Does the clipboard contain HTML?
