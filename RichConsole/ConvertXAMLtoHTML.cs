@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace RichConsole
 {
@@ -29,8 +30,7 @@ namespace RichConsole
             result = result.Replace("</Span>", "</span>");
 
             result = result.Replace("</Section>", "").Replace("</FlowDocument>","");
-
-
+            
             return result;
         }
     }

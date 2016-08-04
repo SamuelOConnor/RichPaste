@@ -16,10 +16,20 @@ namespace RichConsole
         [STAThread]
         private static string ConvertRtfToXaml(string rtfText)
         {
-            var richTextBox = new System.Windows.Controls.RichTextBox();
+            string result = null;
+
+            Exception threadEx = null;
+
+            //Open new Thread
+            Thread staThread = new Thread(
+                delegate ()
+                {
+                try
+                {
+                    var richTextBox = new System.Windows.Controls.RichTextBox();
 
                     if (string.IsNullOrEmpty(rtfText))
-                    return ""; 
+                    result = ""; 
                    
 
                     TextRange textRange = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
@@ -48,11 +58,22 @@ namespace RichConsole
                         rtfMemoryStream.Seek(0, SeekOrigin.Begin);
                         using (var rtfStreamReader = new StreamReader(rtfMemoryStream))
                         {
-                            return rtfStreamReader.ReadToEnd();
+                                result = rtfStreamReader.ReadToEnd();
                         }
 
                     }
-                    
+                    }
+
+                    catch (Exception ex)
+                    {
+                        threadEx = ex;
+                    }
+                });
+            staThread.SetApartmentState(ApartmentState.STA);
+            staThread.Start();
+            staThread.Join();
+
+            return result;
         }
         
 
@@ -71,8 +92,7 @@ namespace RichConsole
         [STAThread]
         public static void Main()
         {
-            MessageBox.Show("Main() Called");
-
+            
             //Create New Instance of OneNote Application
             var oneNote = new Application();
 
@@ -176,8 +196,10 @@ namespace RichConsole
             //Does the clipboard contain Rich Text? (we put an extra && just to be sure it isn't html as they can sometimes get confused)
             if (containsRTF == true && containsHTML == false)
             {
+                string XAML = ConvertRtfToXaml(PastedText);
+
                 //Get HTML from Rich Text
-                Pasteresult = ConvertXAMLtoHTML.convert(ConvertRtfToXaml(PastedText));
+                Pasteresult = ConvertXAMLtoHTML.convert(XAML);
             }
 
             //Does the clipboard contain HTML?
