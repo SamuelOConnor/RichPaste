@@ -7,13 +7,13 @@ ________________________________________________________________________
 
 <h3><u> Contents </u></h3>
 
-[Creating The ribbon button](#Creating)
+[Creating The Ribbon Button](#Creating)
 
-[How OneNote pages are structured/ stored](#structured)
+[How OneNote Pages Are Structured/Stored](#structured)
 
 
 <hr><a name="Creating"/>
-<b><u>Creating The ribbon button</u></b>
+<b><u>Creating The Ribbon Button</u></b>
 
 To start off the addin simply follow this guide: http://www.malteahrens.com/#/blog/howto-onenote-dev/
 
@@ -40,7 +40,7 @@ Most of the guide is still relevant to OneNote 2016 but there are some notable c
 8) This might not be a problem for everyone but in my solution the addin would always fail on load up if I had any "Microsoft.Office.Interop.OneNote.Application" references/objects in my start up Class (the one with your ProgID and GUID). I recommend leaving them out of the startup class and just using them in classes that the startup one uses.
 <br>
 <hr><a name="structured"/>
-<b><u>How OneNote pages are structured/ stored</u></b>
+<b><u>How OneNote Pages Are Structured/Stored</u></b>
 
 OneNote pages are stored in XML. We can view and edit this XML to update our pages.
 
