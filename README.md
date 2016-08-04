@@ -6,10 +6,10 @@ If you have any further questions or would like to contact me then send me an em
 ________________________________________________________________________
 
 <h3><u> Contents </u></h3>
-<ol>
-[<li><u>Creating The ribbon button</u></li>](#Creating)
-[<li><u>How OneNote pages are structured/ stored</u></li>](#structured)
-</ol>
+
+[Creating The ribbon button](#Creating)
+[How OneNote pages are structured/ stored](#structured)
+
 
 <hr><a name="Creating"/>
 <b><u>Creating The ribbon button</u></b>
