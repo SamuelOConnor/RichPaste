@@ -11,6 +11,8 @@ ________________________________________________________________________
 
 [How OneNote Pages Are Structured/Stored](#structured)
 
+[How To Use The OneNote API](#API)
+
 
 <hr><a name="Creating"/>
 <b><u>Creating The Ribbon Button</u></b>
@@ -92,4 +94,38 @@ This reference it contains
 Special formats add in additional tags (like bullet points adds a "Bullet" tag)... but these are the basics and all you need to understand to start editing your pages.
 
 OneNote contains your Page's text within the CDATA[] tag in HTML. This is why some Paste functions work (like copy/pasteing from MS Word) and why Rich Text doesn't (there is no standard RTF to HTML convertion done)
+<br>
+<hr><a name="API"/>
+<b><u>How To Use The OneNote API</u></b>
 
+Once you've got the ribbon created and understand OneNotes data structure you'll want to start querying your own OneNote. 
+
+In your solution first create an instance of the OneNote application:
+
+    var oneNote = new Microsoft.Office.Interop.OneNote.Application();
+
+Notice the fully qualified name, that is because you will most likely have another type of Application in one of your assemblies and you'll have to specify that you want OneNotes API.
+
+One tip is that you can state that you specifically want oneNotes API in a using statement:
+
+    using Application = Microsoft.Office.Interop.OneNote.Application;
+
+That way the first row (and any other OneNote app declarations) can be simplified down to just:
+
+    var oneNote = new Application();
+    
+Now that you have an instance of the onenote API you can start using their methods.
+
+There is a great big list of them all here: https://msdn.microsoft.com/en-us/library/office/gg649853(v=office.14).aspx
+
+Most of them are pretty straight forward, but the few that I believe to be the most useful are actually not on the list.
+
+I'm talking about <b>getting the current NoteBook/Section/Page</b>
+
+These methods are a little more hidden. Here they are listed below:
+
+    string currentOpenNoteBook = oneNote.Windows.CurrentWindow.CurrentNotebookId;
+    string currentOpenSection  = oneNote.Windows.CurrentWindow.CurrentSectionId;    
+    string currentOpenPage = oneNote.Windows.CurrentWindow.CurrentPageId;
+    
+With the above ID's you can then use the GetHierarchy()/ GetPageContent()/ UpdatePageContent() methods to edit your onenote programmatically.
