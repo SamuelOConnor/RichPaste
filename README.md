@@ -5,7 +5,7 @@ ________________________________________________________________________
 <h3><u> Contents </u></h3>
 <ol>
 <li><u>Creating The ribbon button</u></li>
-<li><u>How OneNote pages are structured</u></li>
+<li><u>How OneNote pages are structured/ stored</u></li>
 </ol>
 
 <hr>
@@ -31,7 +31,7 @@ Most of the guide is still relevant to OneNote 2016 but there are some notable c
 6) To build the Setup project along with the Class Libraries you'll need to go into 'Build' >> 'Configuration Manager' and tick 'Build' next to the Setup project
 
 <hr>
-<b><u>How OneNote pages are structured</u></b>
+<b><u>How OneNote pages are structured/ stored</u></b>
 
 OneNote pages are stored in XML. We can view and edit this XML to update our pages.
 
