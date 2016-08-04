@@ -11,7 +11,7 @@ namespace RichConsole
         public static string convert(string XAML)
         {
             string result = XAML.Substring(XAML.IndexOf("<Paragraph"));
-            result = result.Replace("<Paragraph", "<p><span").Replace("</Paragraph", "</p");
+            result = result.Replace("<Paragraph", "<p").Replace("</Paragraph", "</p");
             result = result.Replace("<Run>", "").Replace("</Run>", "");
             result = result.Replace("FontFamily=\"", "style=\"font-family:");
             result = result.Replace("\" FontSize=\"", "; font-size:");

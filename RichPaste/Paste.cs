@@ -67,7 +67,6 @@ namespace RichPaste
         [STAThread]
         public void PasteAction(IRibbonControl control)
         {
-            MessageBox.Show("Button Pushed");
             RichConsole.Program.Main();
         }
 
