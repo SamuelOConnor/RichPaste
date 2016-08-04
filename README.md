@@ -5,7 +5,7 @@ ________________________________________________________________________
 <h3><u> Contents </u></h3>
 <ol>
 <li><u>Creating The ribbon button</u></li>
-<li><u>How OneNote pages are structured and how we can edit them</u></li>
+<li><u>How OneNote pages are structured</u></li>
 </ol>
 
 <hr>
@@ -31,7 +31,7 @@ Most of the guide is still relevant to OneNote 2016 but there are some notable c
 6) To build the Setup project along with the Class Libraries you'll need to go into 'Build' >> 'Configuration Manager' and tick 'Build' next to the Setup project
 
 <hr>
-<b><u>How OneNote pages are structured and how we can edit them</u></b>
+<b><u>How OneNote pages are structured</u></b>
 
 OneNote pages are stored in XML. We can view and edit this XML to update our pages.
 
@@ -71,4 +71,14 @@ The OEChildren belong to the Outline tags that it is between, there are usually 
 
 And the OE, T and CDATA represent lines within the content box. For each line you'll have a seperate CDATA[].
 
-    
+Each OE contains Attributes regarding who created it, when it was created, and a unique object reference id.
+
+This reference it contains 
+
+    1) A GUID   (You can create GUIDs using NewGUID() method)
+    2) A object number  (This increments from the number of the previous object)
+    3) A notebook hex number (I think, not 100% sure but I know that this doesn't change for me on all my pages)
+
+
+Special formats add in additional tags (like bullet points adds a "Bullet" tag)... but these are the basics and all you need to understand to start editing your pages.
+
