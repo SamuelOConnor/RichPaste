@@ -67,7 +67,7 @@ So obviously the CDATA[] between the "Title" tags is the page's name.
 
 The Outline tags specify a new box of content on the page that you can move around. 
 
-The OEChildren belong to the Outline that it is between, there are usually only one OEChildren tag per Outline, but OEChildren can contain as many OE tags as you'd like. 
+The OEChildren belong to the Outline tags that it is between, there are usually only one OEChildren tag per Outline, but OEChildren can contain as many OE tags as you'd like. 
 
 And the OE, T and CDATA represent lines within the content box. For each line you'll have a seperate CDATA[].
 
