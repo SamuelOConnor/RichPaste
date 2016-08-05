@@ -247,6 +247,10 @@ namespace RichConsole
             Pasteresult = Pasteresult.Replace("<DIV", "<span").Replace("</DIV", "</span").Replace("<LI", "<li");
             Pasteresult = Pasteresult.Replace("<SPAN", "<span").Replace("</SPAN", "</span").Replace("</DIV", "</span");
             Pasteresult = Pasteresult.Replace("STYLE=", "style=").Replace("<UL", "<ul").Replace("</UL", "</ul");
+            Pasteresult = Pasteresult.Replace("<!--EndFragment-->", "").Replace("<!--StartFragment-->", "");
+            Pasteresult = Pasteresult.Replace("class=MsoNormal", "").Replace("mso-fareast-language:EN-US", "");
+            Pasteresult = Pasteresult.Replace("<o:p>", "").Replace("</o:p>", "");
+            Pasteresult = Pasteresult.Replace(System.Environment.NewLine, " ");
 
             //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
             int containsPs = Regex.Matches(Pasteresult, "<[p,P]").Count;
@@ -259,13 +263,7 @@ namespace RichConsole
             while (containsPs > 0)
             {
                 //This is the text we will replace the <p>s with, it adds a new block 
-                string replace = " ]]>"+ //End the current block 
-                        "</"+ns+"T>"+    //Close previous T tag
-                      "</"+ns+"OE>" +    //Close previous OE tag
-
-                      "<"+ns+"OE>"+      //Open new Object Entity tag 
-                        "<"+ns+"T>"+     //Open new T tag
-                          "<![CDATA[<span";  //Start current block (this starts a new line)
+                string replace = " ]]></"+ns+"T></"+ns+"OE><"+ns+"OE><"+ns+"T><![CDATA[<span";  //Start current block (this starts a new line)
 
                 //find the position of the <p>
                 int pos = Pasteresult.IndexOf("<P", StringComparison.CurrentCultureIgnoreCase);
