@@ -6,7 +6,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Windows;
-//using Application = Microsoft.Office.Interop.OneNote.Application;
 
 namespace RichPaste
 {
@@ -15,7 +14,6 @@ namespace RichPaste
     [Serializable()]
     public class Paste : IDTExtensibility2, IRibbonExtensibility
     {
-        //Application onApp = new Application();
         
 
         public IStream GetImage(string RTF)
@@ -39,23 +37,16 @@ namespace RichPaste
         
         public void OnBeginShutdown(ref Array custom)
         {
-            //if (onApp != null)
-            //onApp = null;
-
         }
 
         
         public void OnConnection(object application, ext_ConnectMode ConnectMode, object AddInInst, ref Array custom)
         {
-           // onApp = (Application)application;
         }
 
         
         public void OnDisconnection(ext_DisconnectMode RemoveMode, ref Array custom)
         {
-            //onApp = null;
-            //GC.Collect();
-            //GC.WaitForPendingFinalizers();
 
         }
 

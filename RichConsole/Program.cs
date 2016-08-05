@@ -114,13 +114,13 @@ namespace RichConsole
             string Pasteresult = null;
 
 
-            //Set Namespace (Can be set to dynamicly create here if needed)
-            string ns = @"one:";
+            //Set Namespace from our page
+            string ns = xmlPage.Substring(xmlPage.IndexOf("xmlns:") + 6, xmlPage.IndexOf("=\"http://") - (xmlPage.IndexOf("xmlns:") + 6)) + @":";
 
 
             //Find the start and end of the page so that we can insert 
             //a new section in between for our pasted content
-            int start = xmlPage.LastIndexOf("</one:Page>");
+            int start = xmlPage.LastIndexOf("</"+ns+"Page>");
             string startstr = xmlPage.Substring(0, start);
             string endstr = xmlPage.Substring(start, xmlPage.Length - start);
 
@@ -129,13 +129,15 @@ namespace RichConsole
             //(this is essential when the page in OneNote is currently empty)
             string outline =
              "<" + ns + "Outline >" +
-             "<" + ns + "Position x=\"35.0\" y=\"60.0\"/>" + //This puts it just under title
-             "<" + ns + "Size width=\"750.75\" height=\"13.50\" isSetByUser=\"true\"/>" + //Makes the box nice and big
-             "<" + ns + "OEChildren>" +
-             "<" + ns + "OE>" +
-             "<" + ns + "T><![CDATA[]]></" + ns + "T>" +
-             "</" + ns + "OE>" +
-             "</" + ns + "OEChildren>" +
+               "<" + ns + "Position x=\"35.0\" y=\"60.0\"/>" + //This puts it just under title
+               "<" + ns + "Size width=\"750.75\" height=\"13.50\" isSetByUser=\"true\"/>" + //Makes the box nice and big
+                 "<" + ns + "OEChildren>" +
+                   "<" + ns + "OE>" +
+                     "<" + ns + "T>"+
+                         "<![CDATA[]]>"+
+                     "</" + ns + "T>" +
+                 "</" + ns + "OE>" +
+               "</" + ns + "OEChildren>" +
              "</" + ns + "Outline>";
 
 
@@ -256,14 +258,14 @@ namespace RichConsole
             //For each <p> 
             while (containsPs > 0)
             {
-                //Get a new GUID for the new block
-                Guid id = Guid.NewGuid();
-
-                //Get the incremented ID we created earlier
-                string LastIDNumber = Convert.ToString(LastIDNumberint);
-
                 //This is the text we will replace the <p>s with, it adds a new block 
-                string replace = " ]]></one:T></one:OE><one:OE authorResolutionID = \"&lt;resolutionId provider=&quot;Windows Live&quot; hash=&quot;+kg8hJunP8Va6ROK8UKusA==&quot;&gt;&lt;localId cid=&quot;40acfbd23ab1efa8&quot;/&gt;&lt;/resolutionId&gt;\" lastModifiedByResolutionID = \"&lt;resolutionId provider=&quot;Windows Live&quot; hash=&quot;+kg8hJunP8Va6ROK8UKusA==&quot;&gt;&lt;localId cid=&quot;40acfbd23ab1efa8&quot;/&gt;&lt;/resolutionId&gt;\" creationTime = \"2016-08-01T21:36:02.000Z\" lastModifiedTime = \"2016-08-01T21:36:02.000Z\" objectID = \"{" + id + "}{" + LastIDNumber + "}{B0}\" alignment = \"left\" quickStyleIndex = \"1\" style = \"font-family:Consolas;font-size:12.0pt\" ><one:T><![CDATA[<span";
+                string replace = " ]]>"+ //End the current block 
+                        "</"+ns+"T>"+    //Close previous T tag
+                      "</"+ns+"OE>" +    //Close previous OE tag
+
+                      "<"+ns+"OE>"+      //Open new Object Entity tag 
+                        "<"+ns+"T>"+     //Open new T tag
+                          "<![CDATA[<span";  //Start current block (this starts a new line)
 
                 //find the position of the <p>
                 int pos = Pasteresult.IndexOf("<P", StringComparison.CurrentCultureIgnoreCase);
@@ -289,7 +291,7 @@ namespace RichConsole
 
 
             //Get the position of the end of the last code block
-            int PageContent = xmlPage.LastIndexOf("]]></one:T>");
+            int PageContent = xmlPage.LastIndexOf("]]></"+ns+"T>");
             string startofPage = xmlPage.Substring(0, PageContent);
             string endofPage = xmlPage.Substring(PageContent, xmlPage.Length - PageContent);
 
