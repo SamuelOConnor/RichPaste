@@ -213,10 +213,9 @@ namespace RichConsole
 
                 //Get rid of everything before <body> or the first <span>
                 int pFrom = returnStringText.IndexOf("<BODY");
-                if (pFrom == -1) pFrom = returnStringText.IndexOf("<BODY");
+                if (pFrom == -1) pFrom = returnStringText.IndexOf("<body");
                 if (pFrom == -1) pFrom = returnStringText.IndexOf("<SPAN");
                 if (pFrom == -1) pFrom = returnStringText.IndexOf("<span");
-                if (pFrom == -1) pFrom = returnStringText.IndexOf("<body");
 
                 //Get rid of everything after </body> or the last </span>
                 int pTo = returnStringText.LastIndexOf("</BODY>");
@@ -251,13 +250,62 @@ namespace RichConsole
             Pasteresult = Pasteresult.Replace("class=MsoNormal", "").Replace("mso-fareast-language:EN-US", "");
             Pasteresult = Pasteresult.Replace("<o:p>", "").Replace("</o:p>", "");
             Pasteresult = Pasteresult.Replace(System.Environment.NewLine, " ");
+            Pasteresult = Pasteresult.Replace("</b>", "</span>").Replace("</B>", "</span>");
+            Pasteresult = Pasteresult.Replace("</i>", "</span>").Replace("</I>", "</span>");
+            Pasteresult = Pasteresult.Replace("<br>", "<p>").Replace("<BR>", "<p>");
+            
+            //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
+            int containsBs = Regex.Matches(Pasteresult, "<[b,B]").Count;
+
+            //For each <b> 
+            while (containsBs > 0)
+            {
+                string replace = "<span style='font-weight:bold'>";
+
+                //find the position of the <p>
+                int pos = Pasteresult.IndexOf("<B", StringComparison.CurrentCultureIgnoreCase);
+                string afterB = Pasteresult.Substring(pos);
+                int end = afterB.IndexOf(">") + 1;
+
+
+                //If there isn't any left then break
+                if (pos < 0) { break; }
+                else
+                {
+                    //Else replace the <p> with the new block
+                    Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + end);
+                }
+
+                containsBs -= 1;
+            }
 
             //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
-            int containsPs = Regex.Matches(Pasteresult, "<[p,P]").Count;
+            int containsIs = Regex.Matches(Pasteresult, "<[i,I]").Count;
 
-            //Get the ID of the last onenote block, then increment by 1
-            int LastIDNumberPosition = xmlPage.LastIndexOf("{B0}");
-            int LastIDNumberint = Convert.ToInt32(xmlPage.Substring(LastIDNumberPosition - 3, 2)) + 1;
+            //For each <i> 
+            while (containsIs > 0)
+            {
+                string replace = "<span style='font-style:italic'>";
+
+                //find the position of the <p>
+                int pos = Pasteresult.IndexOf("<I", StringComparison.CurrentCultureIgnoreCase);
+                string afterI = Pasteresult.Substring(pos);
+                int end = afterI.IndexOf(">") + 1;
+
+
+                //If there isn't any left then break
+                if (pos < 0) { break; }
+                else
+                {
+                    //Else replace the <p> with the new block
+                    Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + end);
+                }
+
+                containsIs -= 1;
+            }
+            //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
+            int containsPs = Regex.Matches(Pasteresult, "<[p,P]").Count;
+            
 
             //For each <p> 
             while (containsPs > 0)
@@ -275,17 +323,15 @@ namespace RichConsole
                     //Else replace the <p> with the new block
                     Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + "<P".Length);
                 }
-
-                //Increment numbers
-                LastIDNumberint += 1;
+                
                 containsPs -= 1;
             }
 
             //Remove the orphaned </p> tags
             Pasteresult = Pasteresult.Replace("</P>", "").Replace("</p>", "");
 
-        //Plain text will now re-join here
-        Skip:
+            //Plain text will now re-join here
+            Skip:
 
 
             //Get the position of the end of the last code block
@@ -301,6 +347,37 @@ namespace RichConsole
             {
                 //Update the onenote page
                 oneNote.UpdatePageContent(NewPage);
+
+                //Just check that the encoding hasn't created any unwanted Â's
+                oneNote.GetPageContent(thisPage, out xmlPage);
+
+                int areThereAnyÂs = Regex.Matches(xmlPage, @"Â").Count; ;
+
+                if(areThereAnyÂs > 0)
+                {
+                    while (areThereAnyÂs > 0)
+                    {
+                        int pos = xmlPage.IndexOf(@"Â", StringComparison.CurrentCultureIgnoreCase);
+
+                        string replace = "";
+                        //If there isn't any left then break
+                        if (pos < 0) { break; }
+                        else
+                        {
+                            //Else replace the <p> with the new block
+                            xmlPage = xmlPage.Substring(0, pos) + replace + xmlPage.Substring(pos + 1);
+                        }
+
+                        //Increment numbers
+                        areThereAnyÂs -= 1;
+                    }
+
+                    oneNote.UpdatePageContent(xmlPage);
+
+                }
+
+                
+
             }
             catch (Exception e)
             {
