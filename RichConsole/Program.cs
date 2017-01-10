@@ -156,6 +156,7 @@ namespace RichConsole
             bool containsRTF = false;
             bool containsHTML = false;
             bool containsTEXT = false;
+            bool skipReplaces = false;
             Exception threadEx = null;
 
             //Open new Thread
@@ -236,102 +237,106 @@ namespace RichConsole
                 Pasteresult = Pasteresult.Replace("<", "&lt;").Replace(">", "&gt;");
 
                 //Skip the block of HTML tag replacements
-                goto Skip;
+                skipReplaces = true;
             }
 
-            //Remove all un-supported HTML tags (leaving pretty much just <span>'s)
-            //Also make sure the HTML tags that remain are all lower case or onenote will complain
-            Pasteresult = Pasteresult.Replace("<body", "<span").Replace("</body", "</span").Replace("<BODY", "<span").Replace("</BODY", "</span");
-            Pasteresult = Pasteresult.Replace("<div", "<span").Replace("</div", "</span").Replace("</LI", "</li");
-            Pasteresult = Pasteresult.Replace("<DIV", "<span").Replace("</DIV", "</span").Replace("<LI", "<li");
-            Pasteresult = Pasteresult.Replace("<SPAN", "<span").Replace("</SPAN", "</span").Replace("</DIV", "</span");
-            Pasteresult = Pasteresult.Replace("STYLE=", "style=").Replace("<UL", "<ul").Replace("</UL", "</ul");
-            Pasteresult = Pasteresult.Replace("<!--EndFragment-->", "").Replace("<!--StartFragment-->", "");
-            Pasteresult = Pasteresult.Replace("class=MsoNormal", "").Replace("mso-fareast-language:EN-US", "");
-            Pasteresult = Pasteresult.Replace("<o:p>", "").Replace("</o:p>", "");
-            Pasteresult = Pasteresult.Replace(System.Environment.NewLine, " ");
-            Pasteresult = Pasteresult.Replace("</b>", "</span>").Replace("</B>", "</span>");
-            Pasteresult = Pasteresult.Replace("</i>", "</span>").Replace("</I>", "</span>");
-            Pasteresult = Pasteresult.Replace("<br>", "<p>").Replace("<BR>", "<p>");
+            if(skipReplaces == false)
+            {
+
+                //Remove all un-supported HTML tags (leaving pretty much just <span>'s)
+                //Also make sure the HTML tags that remain are all lower case or onenote will complain
+                Pasteresult = Pasteresult.Replace("<body", "<span").Replace("</body", "</span").Replace("<BODY", "<span").Replace("</BODY", "</span");
+                Pasteresult = Pasteresult.Replace("<div", "<span").Replace("</div", "</span").Replace("</LI", "</li");
+                Pasteresult = Pasteresult.Replace("<DIV", "<span").Replace("</DIV", "</span").Replace("<LI", "<li");
+                Pasteresult = Pasteresult.Replace("<SPAN", "<span").Replace("</SPAN", "</span").Replace("</DIV", "</span");
+                Pasteresult = Pasteresult.Replace("STYLE=", "style=").Replace("<UL", "<ul").Replace("</UL", "</ul");
+                Pasteresult = Pasteresult.Replace("<!--EndFragment-->", "").Replace("<!--StartFragment-->", "");
+                Pasteresult = Pasteresult.Replace("class=MsoNormal", "").Replace("mso-fareast-language:EN-US", "");
+                Pasteresult = Pasteresult.Replace("<o:p>", "").Replace("</o:p>", "");
+                Pasteresult = Pasteresult.Replace(System.Environment.NewLine, " ");
+                Pasteresult = Pasteresult.Replace("</b>", "</span>").Replace("</B>", "</span>");
+                Pasteresult = Pasteresult.Replace("</i>", "</span>").Replace("</I>", "</span>");
+                Pasteresult = Pasteresult.Replace("<br>", "<p>").Replace("<BR>", "<p>");
             
-            //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
-            int containsBs = Regex.Matches(Pasteresult, "<[b,B]").Count;
+                //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
+                int containsBs = Regex.Matches(Pasteresult, "<[b,B]").Count;
 
-            //For each <b> 
-            while (containsBs > 0)
-            {
-                string replace = "<span style='font-weight:bold'>";
-
-                //find the position of the <p>
-                int pos = Pasteresult.IndexOf("<B", StringComparison.CurrentCultureIgnoreCase);
-                string afterB = Pasteresult.Substring(pos);
-                int end = afterB.IndexOf(">") + 1;
-
-
-                //If there isn't any left then break
-                if (pos < 0) { break; }
-                else
+                //For each <b> 
+                while (containsBs > 0)
                 {
-                    //Else replace the <p> with the new block
-                    Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + end);
+                    string replace = "<span style='font-weight:bold'>";
+
+                    //find the position of the <p>
+                    int pos = Pasteresult.IndexOf("<B", StringComparison.CurrentCultureIgnoreCase);
+                    string afterB = Pasteresult.Substring(pos);
+                    int end = afterB.IndexOf(">") + 1;
+
+
+                    //If there isn't any left then break
+                    if (pos < 0) { break; }
+                    else
+                    {
+                        //Else replace the <p> with the new block
+                        Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + end);
+                    }
+
+                    containsBs -= 1;
                 }
 
-                containsBs -= 1;
-            }
+                //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
+                int containsIs = Regex.Matches(Pasteresult, "<[i,I]").Count;
 
-            //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
-            int containsIs = Regex.Matches(Pasteresult, "<[i,I]").Count;
-
-            //For each <i> 
-            while (containsIs > 0)
-            {
-                string replace = "<span style='font-style:italic'>";
-
-                //find the position of the <p>
-                int pos = Pasteresult.IndexOf("<I", StringComparison.CurrentCultureIgnoreCase);
-                string afterI = Pasteresult.Substring(pos);
-                int end = afterI.IndexOf(">") + 1;
-
-
-                //If there isn't any left then break
-                if (pos < 0) { break; }
-                else
+                //For each <i> 
+                while (containsIs > 0)
                 {
-                    //Else replace the <p> with the new block
-                    Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + end);
-                }
+                    string replace = "<span style='font-style:italic'>";
 
-                containsIs -= 1;
-            }
-            //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
-            int containsPs = Regex.Matches(Pasteresult, "<[p,P]").Count;
+                    //find the position of the <p>
+                    int pos = Pasteresult.IndexOf("<I", StringComparison.CurrentCultureIgnoreCase);
+                    string afterI = Pasteresult.Substring(pos);
+                    int end = afterI.IndexOf(">") + 1;
+
+
+                    //If there isn't any left then break
+                    if (pos < 0) { break; }
+                    else
+                    {
+                        //Else replace the <p> with the new block
+                        Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + end);
+                    }
+
+                    containsIs -= 1;
+                }
+                //Do we have any paragraphs? If we do then we need to replace them with new XML CDATA sections
+                int containsPs = Regex.Matches(Pasteresult, "<[p,P]").Count;
             
 
-            //For each <p> 
-            while (containsPs > 0)
-            {
-                //This is the text we will replace the <p>s with, it adds a new block 
-                string replace = " ]]></"+ns+"T></"+ns+"OE><"+ns+"OE><"+ns+"T><![CDATA[<span";  //Start current block (this starts a new line)
-
-                //find the position of the <p>
-                int pos = Pasteresult.IndexOf("<P", StringComparison.CurrentCultureIgnoreCase);
-
-                //If there isn't any left then break
-                if (pos < 0) { break; }
-                else
+                //For each <p> 
+                while (containsPs > 0)
                 {
-                    //Else replace the <p> with the new block
-                    Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + "<P".Length);
-                }
+                    //This is the text we will replace the <p>s with, it adds a new block 
+                    string replace = " ]]></"+ns+"T></"+ns+"OE><"+ns+"OE><"+ns+"T><![CDATA[<span";  //Start current block (this starts a new line)
+
+                    //find the position of the <p>
+                    int pos = Pasteresult.IndexOf("<P", StringComparison.CurrentCultureIgnoreCase);
+
+                    //If there isn't any left then break
+                    if (pos < 0) { break; }
+                    else
+                    {
+                        //Else replace the <p> with the new block
+                        Pasteresult = Pasteresult.Substring(0, pos) + replace + Pasteresult.Substring(pos + "<P".Length);
+                    }
                 
-                containsPs -= 1;
-            }
+                    containsPs -= 1;
+                }
 
-            //Remove the orphaned </p> tags
-            Pasteresult = Pasteresult.Replace("</P>", "").Replace("</p>", "");
+                //Remove the orphaned </p> tags
+                Pasteresult = Pasteresult.Replace("</P>", "").Replace("</p>", "");
+            }
+            
 
             //Plain text will now re-join here
-            Skip:
 
 
             //Get the position of the end of the last code block
